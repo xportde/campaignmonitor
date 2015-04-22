@@ -1,0 +1,43 @@
+
+.clear {
+	clear: both;
+}
+
+.campaignMonitorForm select,
+.campaignMonitorForm input[type=text] {
+	width: 250px;
+}
+
+.syncData label,
+.manualExport label {
+	width:400px;
+}
+
+.syncData .button,
+.manualExport .button {
+	position: relative;
+	left:-205px;
+}
+
+.syncData div,
+.manualExport div {
+	text-align: center;
+}
+
+.syncData .cronLink {
+	margin-top: 15px;
+	font-style: italic;
+	font-size: 12px;
+	text-align: left;
+}
+
+form .field {
+	padding-top:15px;
+}
+form .submitBtn {
+	margin-top: 20px;
+	text-align: center;
+}
+form .margin-form {
+	padding-top: 5px;
+}
