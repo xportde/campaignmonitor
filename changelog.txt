@@ -2,8 +2,18 @@
 Prestashop Campaign Monitor Sync Module
 
 @author     Rico Dang <rd@xport.de>
-@copyright  2013 - 2014 xport communication GmbH <info@xport.de>
+@copyright  2013 - 2015 xport communication GmbH <info@xport.de>
 @link       http://www.xport.de
+
+
+
+####################################
+# v0.6.5 beta - (13/08/2015) #
+####################################
+
+Added:
+
+[+] language custom field
 
 
 ####################################

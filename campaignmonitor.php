@@ -140,6 +140,17 @@ class CampaignMonitor extends Module
 			'objProperty' => 'birthday',
 			'datatype' => 'string'
 		),
+		'ps_language' => array(
+			'fieldname' => 'Language',
+			'cmDatatype' => 'Text',
+			'datatype' => 'string',
+			'method' => array(
+				'type' => 'static',
+				'name' => 'getLangIsoCode',
+				'params' => 'id',
+				'returnKey' => 'iso_code'
+			),
+		),
 		'ps_lastOrder' => array(
 			'fieldname' => 'Last Order',
 			'cmDatatype' => 'Date',
@@ -158,7 +169,7 @@ class CampaignMonitor extends Module
 	public function __construct()
 	{
 		$this->name    = 'campaignmonitor';
-		$this->version = '0.6.4b';
+		$this->version = '0.6.5b';
 		$this->tab     = 'advertising_marketing';
 		$this->author  = 'xport communication GmbH';
 
@@ -777,6 +788,13 @@ class CampaignMonitor extends Module
 	{
 		$customers = Customer::getCustomers();
 		return end($customers);
+	} //}}}
+
+	//{{{ getLangIsoCode()
+	public static function getLangIsoCode($id_customer)
+	{
+		$customer = new Customer($id_customer);
+		return array('iso_code' => Language::getIsoById($customer->id_lang));
 	} //}}}
 
 	//{{{ hookNewOrder() method
