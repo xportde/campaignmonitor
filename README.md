@@ -10,7 +10,7 @@ Connects Prestashop with Campaign Monitor
 * realtime synchronisation of customers and subscriptions
 * export customers from prestashop to campaign monitor
 * export custom fields
- * currently supported: customer id, birthdate, date of last order
+ * currently supported: customer id, birthdate, customer language, date of last order
  * if you wish to have more custom fields, feel free to ask
 * multi shop support
 
