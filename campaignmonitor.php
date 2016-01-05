@@ -861,14 +861,18 @@ class CampaignMonitor extends Module
 	//{{{ unregisterFromPsNewsletter() method
 	/**
 	 * slightly modified version of the original Blocknewsletter unregister method
+	 *
 	 * @param  [string] $email
 	 * @param  [int] $register_status
 	 * @param  [int] $id_shop
 	 * @return [bool]
 	 */
-	public static function unregisterFromPsNewsletter($email, $id_shop = null)
+	public static function unregisterFromPsNewsletter($email, $register_status, $id_shop = null)
 	{
-		$sql = 'UPDATE '._DB_PREFIX_.'customer SET `newsletter` = 0 WHERE `email` = \''.pSQL($email).'\' AND id_shop = '.(int)$id_shop;
+		if ($register_status == Blocknewsletter::GUEST_REGISTERED)
+			$sql = 'DELETE FROM '._DB_PREFIX_.'newsletter WHERE `email` = \''.pSQL($email).'\' AND id_shop = '.(int)$id_shop;
+		else if ($register_status == Blocknewsletter::CUSTOMER_REGISTERED)
+			$sql = 'UPDATE '._DB_PREFIX_.'customer SET `newsletter` = 0 WHERE `email` = \''.pSQL($email).'\' AND id_shop = '.(int)$id_shop;
 
 		if (!isset($sql) || !Db::getInstance()->execute($sql))
 			return false;
@@ -902,8 +906,9 @@ class CampaignMonitor extends Module
 	{
 		if (Tools::isSubmit('submitNewsletter'))
 		{
+			$customfields   = array();
 			$customfields[] = array(
-				'Key' => self::CM_CUSTOM_FIELD_PREFIX.$this->customfieldsDefault['ps_id_shop'],
+				'Key' => self::CM_CUSTOM_FIELD_PREFIX.$this->customfieldsDefault['ps_id_shop']['fieldname'],
 				'Value' => (int)$this->id_shop
 			);
 			$this->addSubscribers(array(

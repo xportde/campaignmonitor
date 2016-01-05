@@ -57,7 +57,7 @@ if (is_object($jsonObj))
 					'ps Shop ID',
 					$event->CustomFields
 				);
-				// Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
+				Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
 			}
 			// check if subscribed via newsletter module and unsubscribe if true
 			$registerStatus = $blocknewsletter->isNewsletterRegistered($emailAddress);
