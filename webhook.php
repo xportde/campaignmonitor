@@ -3,8 +3,6 @@
 /**
  * Prestashop Campaign Monitor Sync Module
  *
- * Copyright (C) 2013 - 2015 xport communication GmbH
- *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
@@ -28,19 +26,43 @@ require_once(dirname(__FILE__).'/../../config/config.inc.php');
 $json    = file_get_contents('php://input');
 $jsonObj = json_decode($json);
 
+// default shop context
 if (Shop::isFeatureActive())
 	Shop::setContext(Shop::CONTEXT_ALL);
 
-foreach ($jsonObj->Events as $event)
+if (is_object($jsonObj))
 {
-	$customerByMail = Customer::getCustomersByEmail($event->EmailAddress);
-	$customer       = new Customer($customerByMail[0]['id_customer']);
-
-	if ($event->Type == 'Deactivate')
-		$customer->newsletter = false;
-
-	if ($event->Type == 'Subscribe' || $event->Type == 'Update')
-		$customer->newsletter = true;
-
-	$customer->save();
+	$campaignmonitor = Module::getInstanceByName('campaignmonitor');
+	$blocknewsletter = Module::getInstanceByName('blocknewsletter');
+	foreach ($jsonObj->Events as $event)
+	{
+		$emailAddress   = $event->EmailAddress;
+		$customerByMail = Customer::getCustomersByEmail($emailAddress);
+		if ($customerByMail)
+		{
+			$customer = new Customer($customerByMail[0]['id_customer']);
+			if ($event->Type == 'Deactivate')
+				$customer->newsletter = false;
+			if ($event->Type == 'Subscribe' || $event->Type == 'Update')
+				$customer->newsletter = true;
+			$customer->save();
+		}
+		else
+		{
+			$id_shop = null;
+			// set shop context for each subscriber
+			if (Shop::isFeatureActive())
+			{
+				$id_shop = $campaignmonitor->getCustomFieldValue(
+					'ps Shop ID',
+					$event->CustomFields
+				);
+				// Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
+			}
+			// check if subscribed via newsletter module and unsubscribe if true
+			$registerStatus = $blocknewsletter->isNewsletterRegistered($emailAddress);
+			if ($registerStatus === 1 && $event->Type == 'Deactivate')
+				CampaignMonitor::unregisterFromPsNewsletter($emailAddress, $registerStatus, $id_shop);
+		}
+	}
 }

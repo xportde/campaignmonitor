@@ -128,6 +128,12 @@ class CampaignMonitor extends Module
 	 * @var array
 	 */
 	public $customfieldsDefault = array(
+		'ps_id_shop' => array(
+			'fieldname' => 'Shop ID',
+			'cmDatatype' => 'Number',
+			'objProperty' => 'id_shop',
+			'datatype' => 'int'
+		),
 		'ps_id_customer' => array(
 			'fieldname' => 'Customer ID',
 			'cmDatatype' => 'Number',
@@ -241,6 +247,7 @@ class CampaignMonitor extends Module
 			|| !$this->registerHook('newOrder')
 			|| !$this->registerHook('createAccount')
 			|| !$this->registerHook('backOfficeHeader')
+			|| !$this->registerHook('header')
 		)
 			return false;
 		return true;
@@ -317,7 +324,10 @@ class CampaignMonitor extends Module
 				if (Tools::getValue('cm_custom_fields'))
 					foreach (Tools::getValue('cm_custom_fields') as $field)
 						$customfields[] = array('fieldname' => $field);
-
+				// always save shop id so we can send it to cm later
+				// it is needed to identify and unsubscribe customers that subscribed via
+				// the prestashop newsletter module
+				$customfields[]     = array('fieldname' => 'ps_id_shop');
 				$this->customfields = json_decode(json_encode($customfields));
 
 				$this->_moduleSettings->id_list      = $this->id_list;
@@ -376,12 +386,17 @@ class CampaignMonitor extends Module
 				$this->_errors['apiInfo'][] = $this->l('API information not correct.');
 		}
 
+		$viewCustomFieldsDefault = $this->customfieldsDefault;
+		// remove shop id from optional selectable custom fields
+		// shop id always needs to go to cm
+		unset($viewCustomFieldsDefault['ps_id_shop']);
+
 		$smarty->assign(array(
 			'cmClientApiKey'      => $this->clientApiKey,
 			'cmClientID'          => $this->id_client,
 			'cmSelectedList'      => $this->id_list,
 			'cmLists'             => $cmLists,
-			'customfieldsDefault' => $this->customfieldsDefault,
+			'customfieldsDefault' => $viewCustomFieldsDefault,
 			'customfields'        => $this->customfields,
 			'cronUrl'             => $this->cronUrl,
 			'errors'              => $this->_errors,
@@ -474,6 +489,18 @@ class CampaignMonitor extends Module
 				if ($subscriber !== false)
 					$this->addSubscribers($subscriber);
 			}
+			// check for those who subscribed via the prestashop newsletter module
+			foreach (self::getBlockNewsletterSubscribers() as $subscriber)
+			{
+				$customfields[] = array(
+					'Key' => self::CM_CUSTOM_FIELD_PREFIX.$this->customfieldsDefault['ps_id_shop']['fieldname'],
+					'Value' => (int)$subscriber['id_shop']
+				);
+				$this->addSubscribers(array(
+					'EmailAddress' => $subscriber['email'],
+					'CustomFields' => $customfields
+				));
+			}
 		}
 	} //}}}
 
@@ -530,8 +557,7 @@ class CampaignMonitor extends Module
 
 		foreach ($this->customfields as $value)
 		{
-			$cfData = $this->customfieldsDefault[$value->fieldname];
-
+			$cfData    = $this->customfieldsDefault[$value->fieldname];
 			$fieldname = self::CM_CUSTOM_FIELD_PREFIX.$cfData['fieldname'];
 
 			if ($this->customFieldExists($fieldname))
@@ -586,7 +612,7 @@ class CampaignMonitor extends Module
 		return $customfields;
 	} //}}}
 
-	//{{{ addSubscriber() method
+	//{{{ addSubscribers() method
 	public function addSubscribers($postData, $update = false)
 	{
 		$method = 'POST';
@@ -657,8 +683,8 @@ class CampaignMonitor extends Module
 	 * @return [type]            [description]
 	 */
 	private function _requestData($type, $file, $object = false,
-								  $method = 'GET', $postData = null,
-								  $params = null, $verbose = false)
+	                              $method = 'GET', $postData = null,
+	                              $params = null, $verbose = false)
 	{
 		$curlOptUrl = $this->{$type.'Url'};
 
@@ -707,6 +733,28 @@ class CampaignMonitor extends Module
 	public function getCustomFields($object = false)
 	{
 		return $this->_requestData('lists', 'customfields', $object);
+	} //}}}
+
+	//{{{ getCustomFieldValue() method
+	/**
+	 * get custom field value by key
+	 * @param  [string] $key          - valid custom field key
+	 * @param  [array]  $customfields - fields array, https://www.campaignmonitor.com/api/subscribers/#adding_a_subscriber
+	 * @return [mixed]
+	 */
+	public function getCustomFieldValue($key, $customfields)
+	{
+		$customfield = null;
+		foreach ($customfields as $field)
+		{
+			$field = (object)$field;
+			if ($field->Key == $key)
+			{
+				$customfield = $field->Value;
+				break;
+			}
+		}
+		return $customfield;
 	} //}}}
 
 	//{{{ getSubscribers() method
@@ -797,6 +845,38 @@ class CampaignMonitor extends Module
 		return array('iso_code' => Language::getIsoById($customer->id_lang));
 	} //}}}
 
+	//{{{ getBlockNewsletterSubscribers() method
+	/**
+	 * get subscribers that subscribed via the prestashop newsletter module
+	 * @return [type] [description]
+	 */
+	public static function getBlockNewsletterSubscribers()
+	{
+		$dbquery = new DbQuery();
+		$dbquery->select('*');
+		$dbquery->from('newsletter', 'n');
+		$dbquery->where('n.`active` = 1');
+		return Db::getInstance()->executeS($dbquery->build());
+	}
+	//}}}
+
+	//{{{ unregisterFromPsNewsletter() method
+	/**
+	 * slightly modified version of the original Blocknewsletter unregister method
+	 * @param  [string] $email
+	 * @param  [int] $register_status
+	 * @param  [int] $id_shop
+	 * @return [bool]
+	 */
+	public static function unregisterFromPsNewsletter($email, $id_shop = null)
+	{
+		$sql = 'UPDATE '._DB_PREFIX_.'customer SET `newsletter` = 0 WHERE `email` = \''.pSQL($email).'\' AND id_shop = '.(int)$id_shop;
+
+		if (!isset($sql) || !Db::getInstance()->execute($sql))
+			return false;
+		return true;
+	} //}}}
+
 	//{{{ hookNewOrder() method
 	public function hookNewOrder($params)
 	{
@@ -814,6 +894,25 @@ class CampaignMonitor extends Module
 	{
 		$cssFile = _MODULE_DIR_.$this->name.'/css/'.$this->name.'.css';
 		return '<link href="'.$cssFile.'" rel="stylesheet" type="text/css" />';
+	} //}}}
+
+	//{{{ hookHeader() method
+	/**
+	 * send subscribers which subscribed via prestashop newsletter module to cm
+	 */
+	public function hookHeader($params)
+	{
+		if (Tools::isSubmit('submitNewsletter'))
+		{
+			$customfields[] = array(
+				'Key' => self::CM_CUSTOM_FIELD_PREFIX.$this->customfieldsDefault['ps_id_shop'],
+				'Value' => (int)$this->id_shop
+			);
+			$this->addSubscribers(array(
+				'EmailAddress' => Tools::getValue('email'),
+				'CustomFields' => $customfields
+			));
+		}
 	} //}}}
 
 	//{{{ _getPsMainVersion() method
