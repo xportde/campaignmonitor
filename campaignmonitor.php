@@ -3,8 +3,6 @@
 /**
  * Prestashop Campaign Monitor Sync Module
  *
- * Copyright (C) 2013 - 2015 xport communication GmbH
- *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
@@ -19,7 +17,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Rico Dang <rd@xport.de>
- * @copyright  2013 - 2015 xport communication GmbH
+ * @copyright  2013 - 2016 xport communication GmbH
  * @link       http://www.xport.de
  */
 
@@ -175,7 +173,7 @@ class CampaignMonitor extends Module
 	public function __construct()
 	{
 		$this->name    = 'campaignmonitor';
-		$this->version = '0.6.5b';
+		$this->version = '0.7.0b';
 		$this->tab     = 'advertising_marketing';
 		$this->author  = 'xport communication GmbH';
 

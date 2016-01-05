@@ -2,9 +2,16 @@
 Prestashop Campaign Monitor Sync Module
 
 @author     Rico Dang <rd@xport.de>
-@copyright  2013 - 2015 xport communication GmbH <info@xport.de>
+@copyright  2013 - 2016 xport communication GmbH <info@xport.de>
 @link       http://www.xport.de
 
+####################################
+# v0.7.0 beta - (05/01/2016) #
+####################################
+
+Added:
+
+[+] support for blocknewsletter
 
 
 ####################################

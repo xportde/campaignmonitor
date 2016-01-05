@@ -17,7 +17,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Rico Dang <rd@xport.de>
- * @copyright  2013 - 2015 xport communication GmbH
+ * @copyright  2013 - 2016 xport communication GmbH
  * @link       http://www.xport.de
  */
 
