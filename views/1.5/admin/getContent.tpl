@@ -151,4 +151,28 @@
 			</p>
 		</div>
 	</fieldset>
+</form><br /><div class="clear"></div>
+
+<form action="" method="post" class="cmWebhook">
+	<fieldset>
+		<legend>{l s="Campaign Monitor Webhook"}</legend>
+
+		<div class="errors"></div>
+
+		<div class="field">
+			<label for="cm_list">{l s="Campaign Monitor custom fields"}</label>
+			<div class="margin-form">
+				<p>{l s="Current domain of the webhook:"} <strong>{$webhookUrl}</strong></p>
+				<div class="clear"></div>
+				<p>
+					{l s="If the webhook domain does not match your shop domain, you need to tell campaign monitor the correct domain by clicking the button below."}<br />
+					{l s="Otherwise the synchronisation from campaign monitor to prestashop will not work."}
+				</p>
+			</div>
+		</div>
+
+		<div class="submitBtn">
+			<input class="button" type="submit" value="{l s='Update webhook domain'}" name="recreateWebhook">
+		</div>
+	</div>
 </form>

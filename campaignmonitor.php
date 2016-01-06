@@ -369,6 +369,16 @@ class CampaignMonitor extends Module
 			}
 		}
 
+		if (Tools::isSubmit('recreateWebhook'))
+		{
+			$this->deleteWebHooks();
+			// force some delay, campaign monitor needs some seconds to execute the deletion process
+			// recreation of the webhook won't work without this delay
+			sleep(10);
+			$this->createWebHook(true);
+			$this->_webHooks = $this->getWebHooks(true);
+		}
+
 		if (Tools::isSubmit('exportToCM'))
 			$this->exportCustomer('ALL', true);
 
@@ -389,6 +399,13 @@ class CampaignMonitor extends Module
 		// shop id always needs to go to cm
 		unset($viewCustomFieldsDefault['ps_id_shop']);
 
+		$viewWebhookUrl = 'No URL set';
+		if (isset($this->_webHooks[0]->Url))
+		{
+			$url            = $this->_webHooks[0]->Url;
+			$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
+		}
+
 		$smarty->assign(array(
 			'cmClientApiKey'      => $this->clientApiKey,
 			'cmClientID'          => $this->id_client,
@@ -397,6 +414,7 @@ class CampaignMonitor extends Module
 			'customfieldsDefault' => $viewCustomFieldsDefault,
 			'customfields'        => $this->customfields,
 			'cronUrl'             => $this->cronUrl,
+			'webhookUrl'          => $viewWebhookUrl,
 			'errors'              => $this->_errors,
 			'conf'                => $this->_conf
 		));
@@ -409,10 +427,11 @@ class CampaignMonitor extends Module
 	 * [createWebHook description]
 	 * @return bool
 	 */
-	public function createWebHook()
+	public function createWebHook($skipCheck = false)
 	{
-		if ($this->nbrWebHooks() > 0)
-			return false;
+		if (!$skipCheck)
+			if ($this->nbrWebHooks() > 0)
+				return false;
 
 		$postData = array(
 			'Events' => array('Subscribe', 'Update', 'Deactivate'),
@@ -684,9 +703,9 @@ class CampaignMonitor extends Module
 	                              $method = 'GET', $postData = null,
 	                              $params = null, $verbose = false)
 	{
-		$curlOptUrl = $this->{$type.'Url'};
-
-		if (!isset($curlOptUrl))
+		if (isset($this->{$type.'Url'}))
+			$curlOptUrl = $this->{$type.'Url'};
+		else
 			$curlOptUrl = $type;
 
 		$curlOptUrl = self::REST_URL.$curlOptUrl.'/'.$file.'.json';

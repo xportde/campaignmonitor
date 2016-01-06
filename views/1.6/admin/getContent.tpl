@@ -155,7 +155,7 @@
 
 		</div>
 	</div>
-</form><br /><div class="clear"></div>
+</form><div class="clear"></div>
 
 <form action="" method="post" class="defaultForm form-horizontal">
 	<div class="panel">
@@ -181,6 +181,33 @@
 				</p>
 
 			</div>
+		</div>
+	</div>
+</form><div class="clear"></div>
+
+<form action="" method="post" class="defaultForm form-horizontal">
+	<div class="panel">
+		<div class="panel-heading">{l s="Campaign Monitor Webhook"}</div>
+
+		<div class="errors"></div>
+
+		<div class="form-wrapper">
+			<div class="form-group">
+				<label class="control-label">
+					{l s="Current domain of the webhook:"} <strong>{$webhookUrl}</strong>
+				</label><div class="clear"></div><br />
+
+				<p class="help-block">
+					{l s="If the webhook domain does not match your shop domain, you need to tell campaign monitor the correct domain by clicking the button below."}<br />
+					{l s="Otherwise the synchronisation from campaign monitor to prestashop will not work."}
+				</p>
+			</div>
+		</div>
+
+		<div class="panel-footer">
+			<button id="module_form_submit_btn" class="btn btn-default pull-right" value="{l s='save settings'}" name="recreateWebhook">
+				<i class="process-icon-refresh"></i> {l s='Update webhook domain'}
+			</button>
 		</div>
 	</div>
 </form>
