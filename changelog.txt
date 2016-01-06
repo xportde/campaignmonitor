@@ -6,6 +6,15 @@ Prestashop Campaign Monitor Sync Module
 @link       http://www.xport.de
 
 ####################################
+# v0.8.0 beta - (06/01/2016) #
+####################################
+
+Added:
+
+[+] option to see the current webhook domain used by campaign monitor
+[+] manually resend correct the webhook domain to campaign monitor
+
+####################################
 # v0.7.1 beta - (05/01/2016) #
 ####################################
 
