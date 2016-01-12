@@ -401,7 +401,7 @@ class CampaignMonitor extends Module
 
 		$viewWebhookUrl = 'No URL set';
 
-		if ($this->_webHooks->Code != 50)
+		if ($this->_webHooks->Code != 50 && $this->_webHooks->Code != 101)
 			if (isset($this->_webHooks[0]->Url))
 			{
 				$url            = $this->_webHooks[0]->Url;
