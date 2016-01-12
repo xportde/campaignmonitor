@@ -6,6 +6,14 @@ Prestashop Campaign Monitor Sync Module
 @link       http://www.xport.de
 
 ####################################
+# v0.8.1 beta - (12/01/2016) #
+####################################
+
+Fixed:
+
+[-] Fatal error on install when no api data is set
+
+####################################
 # v0.8.0 beta - (06/01/2016) #
 ####################################
 
