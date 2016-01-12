@@ -400,11 +400,13 @@ class CampaignMonitor extends Module
 		unset($viewCustomFieldsDefault['ps_id_shop']);
 
 		$viewWebhookUrl = 'No URL set';
-		if (isset($this->_webHooks[0]->Url))
-		{
-			$url            = $this->_webHooks[0]->Url;
-			$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
-		}
+
+		if ($this->_webHooks->Code != 50)
+			if (isset($this->_webHooks[0]->Url))
+			{
+				$url            = $this->_webHooks[0]->Url;
+				$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
+			}
 
 		$smarty->assign(array(
 			'cmClientApiKey'      => $this->clientApiKey,
