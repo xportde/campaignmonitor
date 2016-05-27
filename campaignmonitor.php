@@ -401,12 +401,17 @@ class CampaignMonitor extends Module
 
 		$viewWebhookUrl = 'No URL set';
 
-		if ($this->_webHooks->Code != 50 && $this->_webHooks->Code != 101)
-			if (isset($this->_webHooks[0]->Url))
+		if (gettype($this->_webHooks) === 'object')
+		{
+			if ($this->_webHooks->Code != 50 && $this->_webHooks->Code != 101)
 			{
-				$url            = $this->_webHooks[0]->Url;
-				$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
+				if (isset($this->_webHooks[0]->Url))
+				{
+					$url            = $this->_webHooks[0]->Url;
+					$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
+				}
 			}
+		}
 
 		$smarty->assign(array(
 			'cmClientApiKey'      => $this->clientApiKey,
