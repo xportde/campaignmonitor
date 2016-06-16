@@ -173,7 +173,7 @@ class CampaignMonitor extends Module
 	public function __construct()
 	{
 		$this->name    = 'campaignmonitor';
-		$this->version = '0.8.1b';
+		$this->version = '0.8.2b';
 		$this->tab     = 'advertising_marketing';
 		$this->author  = 'xport communication GmbH';
 
