@@ -17,7 +17,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Rico Dang <rd@xport.de>
- * @copyright  2013 - 2016 xport communication GmbH
+ * @copyright  2013 - 2017 xport communication GmbH
  * @link       http://www.xport.de
  */
 
@@ -173,7 +173,7 @@ class CampaignMonitor extends Module
 	public function __construct()
 	{
 		$this->name    = 'campaignmonitor';
-		$this->version = '0.8.2b';
+		$this->version = '0.8.3b';
 		$this->tab     = 'advertising_marketing';
 		$this->author  = 'xport communication GmbH';
 
