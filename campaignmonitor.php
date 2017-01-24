@@ -404,14 +404,11 @@ class CampaignMonitor extends Module
 		if (gettype($this->_webHooks) === 'object')
 		{
 			if ($this->_webHooks->Code != 50 && $this->_webHooks->Code != 101)
-			{
-				if (isset($this->_webHooks[0]->Url))
-				{
-					$url            = $this->_webHooks[0]->Url;
-					$viewWebhookUrl = parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
-				}
-			}
+				$viewWebhookUrl = $this->getWebHookUrl();
 		}
+		else
+			$viewWebhookUrl = $this->getWebHookUrl();
+
 
 		$smarty->assign(array(
 			'cmClientApiKey'      => $this->clientApiKey,
@@ -422,6 +419,7 @@ class CampaignMonitor extends Module
 			'customfields'        => $this->customfields,
 			'cronUrl'             => $this->cronUrl,
 			'webhookUrl'          => $viewWebhookUrl,
+			'webhookUrlFull'      => $this->getWebHookUrl(true),
 			'errors'              => $this->_errors,
 			'conf'                => $this->_conf
 		));
@@ -948,6 +946,19 @@ class CampaignMonitor extends Module
 	public function _getPsMainVersion()
 	{
 		return substr(_PS_VERSION_, 0, 3);
+	} //}}}
+
+	//{{{ getWebHookUrl() method
+	public function getWebHookUrl($full = false)
+	{
+		if (isset($this->_webHooks[0]->Url))
+		{
+			$url = $this->_webHooks[0]->Url;
+			if ($full)
+				return $url;
+			return parse_url($url, PHP_URL_SCHEME).'://'.parse_url($url, PHP_URL_HOST).'/';
+		}
+		return false;
 	} //}}}
 
 }

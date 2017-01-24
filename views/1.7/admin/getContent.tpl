@@ -199,7 +199,8 @@
 
 				<p class="help-block">
 					{l s="If the webhook domain does not match your shop domain, you need to tell campaign monitor the correct domain by clicking the button below."}<br />
-					{l s="Otherwise the synchronisation from campaign monitor to prestashop will not work."}
+					{l s="Otherwise the synchronisation from campaign monitor to prestashop will not work."}<br /><br />
+					{l s="Full webhook url:"} {$webhookUrlFull}
 				</p>
 			</div>
 		</div>
