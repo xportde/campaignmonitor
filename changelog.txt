@@ -6,6 +6,15 @@ Prestashop Campaign Monitor Sync Module
 @link       http://www.xport.de
 
 ####################################
+# v0.8.4 beta - (27/04/2017) #
+####################################
+
+Fixed:
+
+[-] fixed »Cannot use object of type stdClass as array«-error on install
+
+
+####################################
 # v0.8.3 beta - (24/01/2017) #
 ####################################
 
