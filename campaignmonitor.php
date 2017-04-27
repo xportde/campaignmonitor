@@ -951,6 +951,9 @@ class CampaignMonitor extends Module
 	//{{{ getWebHookUrl() method
 	public function getWebHookUrl($full = false)
 	{
+		if ($this->_webHooks->Code == 50 || !is_array($this->_webHooks))
+			return false;
+
 		if (isset($this->_webHooks[0]->Url))
 		{
 			$url = $this->_webHooks[0]->Url;
